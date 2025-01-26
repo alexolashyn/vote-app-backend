@@ -25,11 +25,14 @@
    ```bash
    npm install
 3. Створіть файл .env для змінних середовища. Приклад:
-  ```bash
-  DATABASE_HOST=localhost
-  DATABASE_PORT=5432
-  DATABASE_USERNAME=your-username
-  DATABASE_PASSWORD=your-password
-  DATABASE_NAME=vote_app
-  JWT_SECRET=your-secret-key
-  JWT_EXPIRATION=3600
+   ```bash
+   DATABASE_HOST=localhost
+   DATABASE_PORT=5432
+   DATABASE_USERNAME=your-username
+   DATABASE_PASSWORD=your-password
+   DATABASE_NAME=vote_app
+   JWT_SECRET=your-secret-key
+   JWT_EXPIRATION=3600
+4. Запустіть сервер для розробки:
+   ```bash
+   npm run start:dev
