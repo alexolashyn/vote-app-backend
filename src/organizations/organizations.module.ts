@@ -1,15 +1,18 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
+import { OrganizationsService } from './organizations.service';
+import { OrganizationsController } from './organizations.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Organization } from '../entities/organization.entity';
 import { User } from '../entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtStrategy } from './jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Request } from '../entities/request.entity';
+import { PollsModule } from '../polls/polls.module';
+import { AdminGuard } from '../guards/admin.guard';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([Organization, User, Request]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -20,8 +23,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       }),
       inject: [ConfigService],
     }),
+    PollsModule,
   ],
-  providers: [AuthService, JwtStrategy],
-  controllers: [AuthController],
+  providers: [OrganizationsService, AdminGuard],
+  controllers: [OrganizationsController],
 })
-export class AuthModule {}
+export class OrganizationsModule {
+}

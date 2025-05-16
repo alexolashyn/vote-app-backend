@@ -1,9 +1,9 @@
-import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { User } from './user.entity';
+import { User } from '../entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -34,8 +34,11 @@ export class AuthService {
 
   async login(email: string, password: string) {
     const user = await this.userRepository.findOne({ where: { email } });
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      throw new UnauthorizedException('Provided credentials are invalid!');
+    if (!user) {
+      throw new NotFoundException('Provided credentials are invalid!');
+    }
+    if(!(await bcrypt.compare(password, user.password))) {
+      throw new BadRequestException('Provided credentials are invalid!');
     }
     return this.generateToken(user);
   }

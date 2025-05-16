@@ -5,39 +5,60 @@ import {
   Body,
   Param,
   UseGuards,
-  Request,
+  Request, BadRequestException,
 } from '@nestjs/common';
 import { PollsService } from './polls.service';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import {CreatePollDto} from '../dtos/create-poll.dto';
+import { CreatePollDto } from '../dtos/create-poll.dto';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { MembershipGuard } from '../guards/membership.guard';
+import { AdminGuard } from '../guards/admin.guard';
 
 @Controller('polls')
+@UseGuards(MembershipGuard)
 @UseGuards(JwtAuthGuard)
 export class PollsController {
   constructor(private readonly pollsService: PollsService) {
   }
 
-  @Post()
-  createPoll(@Body() body: CreatePollDto, @Request() req) {
-    return this.pollsService.createPoll(body.title, body.options, req.user.id, body.description);
+  @Post(':orgId')
+  createPoll(
+    @Body() body: CreatePollDto,
+    @Request() req,
+    @Param('orgId') orgId: number,
+  ) {
+    const { title, options, description } = body;
+    const { id: userId } = req.user;
+    return this.pollsService.createPoll(title, options, description, userId, orgId);
   }
 
-  @Get()
-  getAllPolls() {
-    return this.pollsService.getAllPolls();
-  }
-
-  @Get(':id')
-  getPollById(@Param('id') id: number) {
+  @Get(':pollId')
+  getPollById(@Param('pollId') id: number) {
     return this.pollsService.getPollById(id);
   }
 
-  @Post(':id/vote')
+  @Post(':pollId/vote')
   vote(
-    @Param('id') id: number,
+    @Param('pollId') id: number,
     @Body() body: { option: string },
     @Request() req,
   ) {
-    return this.pollsService.vote(id, body.option, req.user.id);
+    const { option } = body;
+    if (!option) {
+      throw new BadRequestException('Option is required!');
+    }
+    const { id: userId } = req.user;
+    return this.pollsService.vote(id, option, userId);
   }
+
+  @Post(':pollId/close')
+  @UseGuards(AdminGuard)
+  closePoll(@Param('pollId') id: number) {
+    return this.pollsService.closePoll(id);
+  }
+
+  @Get(':pollId/result')
+  getPollResult(@Param('pollId') id: number) {
+    return this.pollsService.getPollResult(id);
+  }
+
 }
