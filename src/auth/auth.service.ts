@@ -37,7 +37,8 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException('Provided credentials are invalid!');
     }
-    if(!(await bcrypt.compare(password, user.password))) {
+    const isValidPassword = !(await bcrypt.compare(password, user.password));
+    if (isValidPassword) {
       throw new BadRequestException('Provided credentials are invalid!');
     }
     return this.generateToken(user);
