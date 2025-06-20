@@ -31,4 +31,41 @@ describe('AuthController', () => {
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });
+
+  describe('register', () => {
+    it('should call authService.register with correct params and return result', async () => {
+      const dto = { email: 'test@example.com', password: '123456' };
+      const result = { id: 1, email: dto.email };
+      mockAuthService.register.mockResolvedValue(result);
+
+      const res = await controller.register(dto);
+
+      expect(mockAuthService.register).toHaveBeenCalledWith(dto.email, dto.password);
+      expect(res).toEqual(result);
+    });
+  });
+
+  describe('login', () => {
+    it('should call authService.login with correct params and return result', async () => {
+      const dto = { email: 'test@example.com', password: '123456' };
+      const result = { accessToken: 'token' };
+      mockAuthService.login.mockResolvedValue(result);
+
+      const res = await controller.login(dto);
+
+      expect(mockAuthService.login).toHaveBeenCalledWith(dto.email, dto.password);
+      expect(res).toEqual(result);
+    });
+  });
+
+  describe('getProfile', () => {
+    it('should return user from request object', () => {
+      const user = { id: 1, email: 'test@example.com' };
+      const req = { user };
+
+      const res = controller.getProfile(req as any);
+
+      expect(res).toEqual(user);
+    });
+  });
 });
