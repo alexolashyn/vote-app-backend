@@ -68,4 +68,20 @@ describe('AuthController', () => {
       expect(res).toEqual(user);
     });
   });
+
+  describe('register - validation', () => {
+    it('should handle empty email', async () => {
+      const dto = { email: '', password: '123456' };
+      mockAuthService.register.mockRejectedValue(new Error('Email is required'));
+
+      await expect(controller.register(dto)).rejects.toThrow('Email is required');
+    });
+
+    it('should handle empty password', async () => {
+      const dto = { email: 'test@example.com', password: '' };
+      mockAuthService.register.mockRejectedValue(new Error('Password is required'));
+
+      await expect(controller.register(dto)).rejects.toThrow('Password is required');
+    });
+  });
 });
