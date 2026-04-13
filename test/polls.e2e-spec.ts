@@ -7,11 +7,11 @@ import { CreateOrgDto } from '../src/dtos/create-org.dto';
 
 describe('Polls system (e2e)', () => {
   let app: INestApplication;
-  let authToken: string; // Токен для звичайного користувача
-  let adminAuthToken: string; // Токен для користувача-адміністратора
-  let orgId: number; // ID організації, створеної для тестів
+  let authToken: string; // Non-admin token
+  let adminAuthToken: string; // Admin token
+  let orgId: number; // Organization ID created for tests
 
-  // Допоміжна функція для реєстрації користувача
+  // Helper function to register a user
   const registerUser = async (email: string, password: string) => {
     const response = await request(app.getHttpServer())
       .post('/auth/register')
@@ -20,7 +20,7 @@ describe('Polls system (e2e)', () => {
     return response.body.token;
   };
 
-  // Допоміжна функція для створення організації
+  // Helper function to create an organization
   const createOrganization = async (token: string, name: string, members: string[]) => {
     const createOrgDto: CreateOrgDto = { name, members };
     const response = await request(app.getHttpServer())
@@ -31,7 +31,7 @@ describe('Polls system (e2e)', () => {
     return response.body.id;
   };
 
-  // Допоміжна функція для створення опитування
+  // Helper function to create a poll
   const createPoll = async (token: string, orgId: number, title: string, options: string[], description?: string) => {
     const createPollDto: CreatePollDto = { title, options, description };
     const response = await request(app.getHttpServer())
@@ -50,13 +50,13 @@ describe('Polls system (e2e)', () => {
     app = moduleFixture.createNestApplication();
     await app.init();
 
-    // Зареєструємо звичайного користувача та отримаємо токен
+    // Register a regular user and get token
     authToken = await registerUser('poll.user@example.com', 'Password123');
 
-    // Зареєструємо користувача-адміністратора та отримаємо токен
+    // Register an admin user and get token
     adminAuthToken = await registerUser('poll.admin@example.com', 'AdminPassword123');
 
-    // Створимо організацію, де обидва користувачі є членами, а адмін - творцем
+    // Create an organization where both users are members, and admin is the creator
     orgId = await createOrganization(adminAuthToken, 'Poll Test Org', ['poll.user@example.com', 'poll.admin@example.com']);
   });
 
@@ -85,7 +85,7 @@ describe('Polls system (e2e)', () => {
   });
 
   it('gets a poll by ID', async () => {
-    // Створимо опитування для тестування
+    // Create a poll for testing
     const pollId = await createPoll(
       authToken,
       orgId,
@@ -105,7 +105,7 @@ describe('Polls system (e2e)', () => {
   });
 
   it('handles vote request', async () => {
-    // Створимо опитування
+    // Create a poll
     const pollId = await createPoll(
       authToken,
       orgId,
@@ -121,7 +121,7 @@ describe('Polls system (e2e)', () => {
   });
 
   it('handles close poll request (requires admin)', async () => {
-    // Створимо опитування від імені адміна
+    // Create a poll as admin
     const pollId = await createPoll(
       adminAuthToken,
       orgId,
@@ -131,12 +131,12 @@ describe('Polls system (e2e)', () => {
 
     return request(app.getHttpServer())
       .post(`/polls/${pollId}/close`)
-      .set('Authorization', `Bearer ${adminAuthToken}`) // Використовуємо токен адміна
+      .set('Authorization', `Bearer ${adminAuthToken}`) // Use admin token
       .expect(201)
   });
 
   it('fails to close poll if not admin', async () => {
-    // Створимо опитування від імені звичайного користувача
+    // Create a poll as a regular user
     const pollId = await createPoll(
       authToken,
       orgId,
@@ -146,8 +146,8 @@ describe('Polls system (e2e)', () => {
 
     return request(app.getHttpServer())
       .post(`/polls/${pollId}/close`)
-      .set('Authorization', `Bearer ${authToken}`) // Використовуємо токен звичайного користувача
-      .expect(403); // Очікуємо Forbidden (відсутність прав адміна)
+      .set('Authorization', `Bearer ${authToken}`) // Use regular user token
+      .expect(403); // Expect Forbidden (missing admin rights)
   });
 
 
