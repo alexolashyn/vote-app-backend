@@ -6,7 +6,7 @@ import { CreateOrgDto } from '../src/dtos/create-org.dto';
 
 describe('Organizations system (e2e)', () => {
   let app: INestApplication;
-  let authToken: string; // Токен для авторизованого користувача
+  let authToken: string; // Token for authorized user
 
   const registerUser = async (email: string, password: string) => {
     const response = await request(app.getHttpServer())
@@ -155,7 +155,7 @@ describe('Organizations system (e2e)', () => {
   it('handles a join request (approve/reject) - (requires admin privileges)', async () => {
 
 
-    // Крок 1: Створимо адміністратора та організацію
+    // Create org and admin
     const adminEmail = 'admin@example.com';
     const adminPassword = 'AdminPassword1';
     const adminToken = await registerUser(adminEmail, adminPassword);
