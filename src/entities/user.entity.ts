@@ -5,10 +5,10 @@ import {
   AfterInsert,
   AfterRemove,
   ManyToMany,
-  OneToMany
+  OneToMany,
 } from 'typeorm';
 import { Organization } from './organization.entity';
-import {Request} from './request.entity';
+import { Request } from './request.entity';
 
 export enum UserRole {
   USER = 'user',
@@ -34,7 +34,6 @@ export class User {
 
   @OneToMany(() => Request, (request) => request.user)
   requests: Request[];
-
 
   @AfterInsert()
   logInsert() {

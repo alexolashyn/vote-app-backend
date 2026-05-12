@@ -29,7 +29,6 @@ export class Organization {
   @JoinTable()
   members: User[];
 
-
   @OneToMany(() => Poll, (poll) => poll.organization)
   polls: Poll[];
 

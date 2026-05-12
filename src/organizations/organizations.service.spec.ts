@@ -4,7 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 import { Organization } from '../entities/organization.entity';
 import { Request } from '../entities/request.entity';
-import { JwtService } from '@nestjs/jwt';  // Import JwtService
+import { JwtService } from '@nestjs/jwt'; // Import JwtService
 
 describe('OrganizationsService', () => {
   let service: OrganizationsService;
@@ -38,8 +38,14 @@ describe('OrganizationsService', () => {
       providers: [
         OrganizationsService,
         { provide: getRepositoryToken(User), useValue: mockUserRepository },
-        { provide: getRepositoryToken(Organization), useValue: mockOrganizationRepository },
-        { provide: getRepositoryToken(Request), useValue: mockRequestRepository },
+        {
+          provide: getRepositoryToken(Organization),
+          useValue: mockOrganizationRepository,
+        },
+        {
+          provide: getRepositoryToken(Request),
+          useValue: mockRequestRepository,
+        },
         { provide: JwtService, useValue: mockJwtService },
       ],
     }).compile();
@@ -78,10 +84,18 @@ describe('OrganizationsService', () => {
       mockUserRepository.findOne.mockResolvedValue(creator);
       mockUserRepository.save.mockResolvedValue({ ...creator, role: 'ADMIN' });
       mockUserRepository.find.mockResolvedValue([member]);
-      mockOrganizationRepository.create.mockReturnValue({ name: 'Test Org', members: [member], creatorId: 1 });
+      mockOrganizationRepository.create.mockReturnValue({
+        name: 'Test Org',
+        members: [member],
+        creatorId: 1,
+      });
       mockOrganizationRepository.save.mockResolvedValue(savedOrg);
 
-      const result = await service.createOrganization('Test Org', ['member@example.com'], 1);
+      const result = await service.createOrganization(
+        'Test Org',
+        ['member@example.com'],
+        1,
+      );
 
       expect(result).toMatchObject({
         id: savedOrg.id,
@@ -93,7 +107,10 @@ describe('OrganizationsService', () => {
 
   describe('OrganizationsService - generateKey', () => {
     it('should return a signed key', async () => {
-      mockOrganizationRepository.findOne.mockResolvedValue({ id: 1, members: [] });
+      mockOrganizationRepository.findOne.mockResolvedValue({
+        id: 1,
+        members: [],
+      });
 
       const result = await service.generateKey(1);
       expect(result).toEqual({ key: 'mocked-jwt-token' });
@@ -104,9 +121,14 @@ describe('OrganizationsService', () => {
     it('should throw if user is already a member', async () => {
       const user = { id: 1 };
       mockJwtService.verify.mockReturnValue({ orgId: 123 });
-      mockOrganizationRepository.findOne.mockResolvedValue({ id: 123, members: [{ id: 1 }] });
+      mockOrganizationRepository.findOne.mockResolvedValue({
+        id: 123,
+        members: [{ id: 1 }],
+      });
 
-      await expect(service.sendRequest(user as any, 'mocked-jwt')).rejects.toThrow('User is already a member!');
+      await expect(
+        service.sendRequest(user as any, 'mocked-jwt'),
+      ).rejects.toThrow('User is already a member!');
     });
 
     it('should throw if request already exists', async () => {
@@ -116,7 +138,9 @@ describe('OrganizationsService', () => {
       mockOrganizationRepository.findOne.mockResolvedValue(org);
       mockRequestRepository.findOne.mockResolvedValue({});
 
-      await expect(service.sendRequest(user as any, 'mocked-jwt')).rejects.toThrow('Request already exists!');
+      await expect(
+        service.sendRequest(user as any, 'mocked-jwt'),
+      ).rejects.toThrow('Request already exists!');
     });
 
     it('should create and save a request', async () => {
@@ -138,16 +162,18 @@ describe('OrganizationsService', () => {
       mockRequestRepository.findOne.mockResolvedValue(null);
       mockOrganizationRepository.findOne.mockResolvedValue({ id: 1 });
 
-      await expect(service.handleJoinRequest(1, 1, true)).rejects.toThrow('Request is not found!');
+      await expect(service.handleJoinRequest(1, 1, true)).rejects.toThrow(
+        'Request is not found!',
+      );
     });
 
     it('should reject if request already processed', async () => {
       mockRequestRepository.findOne.mockResolvedValue({ status: 'APPROVED' });
       mockOrganizationRepository.findOne.mockResolvedValue({ id: 1 });
 
-      await expect(service.handleJoinRequest(1, 1, true)).rejects.toThrow('Request has already been processed!');
+      await expect(service.handleJoinRequest(1, 1, true)).rejects.toThrow(
+        'Request has already been processed!',
+      );
     });
-
   });
-
 });

@@ -50,7 +50,6 @@ describe('Organizations system (e2e)', () => {
   });
 
   it('handles get organizations request for the user', async () => {
-
     const createOrgDto: CreateOrgDto = {
       name: 'User Org 1',
       members: [],
@@ -73,7 +72,6 @@ describe('Organizations system (e2e)', () => {
   });
 
   it('handles get organization by ID request', async () => {
-
     const createOrgDto: CreateOrgDto = {
       name: 'Specific Organization',
       members: [],
@@ -98,7 +96,6 @@ describe('Organizations system (e2e)', () => {
   });
 
   it('generates a key for an organization', async () => {
-
     const createOrgDto: CreateOrgDto = {
       name: 'Org with Key',
       members: [],
@@ -124,7 +121,6 @@ describe('Organizations system (e2e)', () => {
   });
 
   it('sends a request to join an organization', async () => {
-
     const createOrgDto: CreateOrgDto = {
       name: 'Joinable Org',
       members: [],
@@ -143,18 +139,19 @@ describe('Organizations system (e2e)', () => {
       .expect(201);
     const orgKey = keyResponse.body.key;
 
-    const anotherUserToken = await registerUser('another.user@example.com', 'Password123');
+    const anotherUserToken = await registerUser(
+      'another.user@example.com',
+      'Password123',
+    );
 
     return request(app.getHttpServer())
       .post('/organizations/request')
       .set('Authorization', `Bearer ${anotherUserToken}`)
       .send({ key: orgKey })
-      .expect(201)
+      .expect(201);
   });
 
   it('handles a join request (approve/reject) - (requires admin privileges)', async () => {
-
-
     // Create org and admin
     const adminEmail = 'admin@example.com';
     const adminPassword = 'AdminPassword1';
@@ -179,7 +176,10 @@ describe('Organizations system (e2e)', () => {
 
     const regularUserEmail = 'regular.user@example.com';
     const regularUserPassword = 'RegularPassword1';
-    const regularUserToken = await registerUser(regularUserEmail, regularUserPassword);
+    const regularUserToken = await registerUser(
+      regularUserEmail,
+      regularUserPassword,
+    );
 
     await request(app.getHttpServer())
       .post('/organizations/request')
@@ -201,11 +201,10 @@ describe('Organizations system (e2e)', () => {
     return request(app.getHttpServer())
       .post(`/organizations/${orgId}/requests/${requestId}/approve`)
       .set('Authorization', `Bearer ${adminToken}`)
-      .expect(201)
+      .expect(201);
   });
 
   it('gets organization members (requires membership)', async () => {
-
     const createOrgDto: CreateOrgDto = {
       name: 'Members Org',
       members: [],
@@ -225,7 +224,11 @@ describe('Organizations system (e2e)', () => {
       .then((res) => {
         expect(Array.isArray(res.body.members)).toBeTruthy();
         expect(res.body.members.length).toBeGreaterThan(0);
-        expect(res.body.members.some((m: any) => m.email === 'test.user@example.com')).toBeTruthy();
+        expect(
+          res.body.members.some(
+            (m: any) => m.email === 'test.user@example.com',
+          ),
+        ).toBeTruthy();
       });
   });
 });

@@ -31,7 +31,10 @@ describe('PollsService', () => {
         PollsService,
         { provide: getRepositoryToken(Poll), useValue: mockPollRepository },
         { provide: getRepositoryToken(Vote), useValue: mockVoteRepository },
-        { provide: getRepositoryToken(Organization), useValue: mockOrganizationRepository },
+        {
+          provide: getRepositoryToken(Organization),
+          useValue: mockOrganizationRepository,
+        },
       ],
     }).compile();
 
@@ -51,12 +54,24 @@ describe('PollsService', () => {
 
     it('should create and save poll', async () => {
       const organization = { id: 1 };
-      const poll = { title: 'Title', options: ['A', 'B'], description: 'desc', creatorId: 1, organization };
+      const poll = {
+        title: 'Title',
+        options: ['A', 'B'],
+        description: 'desc',
+        creatorId: 1,
+        organization,
+      };
       mockOrganizationRepository.findOne.mockResolvedValue(organization);
       mockPollRepository.create.mockReturnValue(poll);
       mockPollRepository.save.mockResolvedValue({ ...poll, id: 1 });
 
-      const result = await service.createPoll('Title', ['A', 'B'], 'desc', 1, 1);
+      const result = await service.createPoll(
+        'Title',
+        ['A', 'B'],
+        'desc',
+        1,
+        1,
+      );
       expect(result.id).toBe(1);
     });
   });
@@ -66,7 +81,9 @@ describe('PollsService', () => {
       const poll = { id: 1, options: ['Yes', 'No'], votes: [] };
       jest.spyOn(service, 'getPollById').mockResolvedValue(poll as any);
 
-      await expect(service.vote(1, 'Maybe', 1)).rejects.toThrow(BadRequestException);
+      await expect(service.vote(1, 'Maybe', 1)).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('should throw if user already voted', async () => {
@@ -74,14 +91,20 @@ describe('PollsService', () => {
       jest.spyOn(service, 'getPollById').mockResolvedValue(poll as any);
       mockVoteRepository.findOne.mockResolvedValue({ id: 10 });
 
-      await expect(service.vote(1, 'Yes', 1)).rejects.toThrow(BadRequestException);
+      await expect(service.vote(1, 'Yes', 1)).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('should save vote', async () => {
       const poll = { id: 1, options: ['Yes', 'No'], votes: [] };
       jest.spyOn(service, 'getPollById').mockResolvedValue(poll as any);
       mockVoteRepository.findOne.mockResolvedValue(null);
-      mockVoteRepository.create.mockReturnValue({ option: 'Yes', userId: 1, poll });
+      mockVoteRepository.create.mockReturnValue({
+        option: 'Yes',
+        userId: 1,
+        poll,
+      });
       mockVoteRepository.save.mockResolvedValue({ id: 2 });
 
       const result = await service.vote(1, 'Yes', 1);
@@ -112,7 +135,9 @@ describe('PollsService', () => {
       const poll = { id: 1, isActive: true, votes: [], options: [] };
       jest.spyOn(service, 'getPollById').mockResolvedValue(poll as any);
 
-      await expect(service.getPollResult(1)).rejects.toThrow(BadRequestException);
+      await expect(service.getPollResult(1)).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('should return formatted poll results', async () => {
@@ -120,11 +145,7 @@ describe('PollsService', () => {
         id: 1,
         isActive: false,
         options: ['A', 'B'],
-        votes: [
-          { option: 'A' },
-          { option: 'A' },
-          { option: 'B' },
-        ],
+        votes: [{ option: 'A' }, { option: 'A' }, { option: 'B' }],
       };
       jest.spyOn(service, 'getPollById').mockResolvedValue(poll as any);
 

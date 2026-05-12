@@ -8,5 +8,4 @@ export class CreateOrgDto {
   @IsArray()
   @IsString({ each: true })
   members: string[];
-
 }

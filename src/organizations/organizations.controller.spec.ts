@@ -50,9 +50,15 @@ describe('OrganizationsController', () => {
       const result = { id: 1, name: 'Test Org' };
       mockOrganizationsService.createOrganization.mockResolvedValue(result);
 
-      const res = await controller.createOrganization(dto, { user: { id: 1 } } as any);
+      const res = await controller.createOrganization(dto, {
+        user: { id: 1 },
+      } as any);
 
-      expect(mockOrganizationsService.createOrganization).toHaveBeenCalledWith(dto.name, dto.members, 1);
+      expect(mockOrganizationsService.createOrganization).toHaveBeenCalledWith(
+        dto.name,
+        dto.members,
+        1,
+      );
       expect(res).toEqual(result);
     });
   });
@@ -64,7 +70,9 @@ describe('OrganizationsController', () => {
 
       const res = await controller.getOrganizations({ user: { id: 1 } } as any);
 
-      expect(mockOrganizationsService.getUserOrganizations).toHaveBeenCalledWith(1);
+      expect(
+        mockOrganizationsService.getUserOrganizations,
+      ).toHaveBeenCalledWith(1);
       expect(res).toEqual(result);
     });
   });
@@ -76,7 +84,9 @@ describe('OrganizationsController', () => {
 
       const res = await controller.getOrganizationById('1' as any);
 
-      expect(mockOrganizationsService.getOrganizationById).toHaveBeenCalledWith('1');
+      expect(mockOrganizationsService.getOrganizationById).toHaveBeenCalledWith(
+        '1',
+      );
       expect(res).toEqual(result);
     });
   });
@@ -95,13 +105,18 @@ describe('OrganizationsController', () => {
 
   describe('sendRequest', () => {
     it('should call service.sendRequest and return result', async () => {
-      const dto = { key: 'test-key' };
       const result = { id: 1 };
       mockOrganizationsService.sendRequest.mockResolvedValue(result);
 
-      const res = await controller.sendRequest({ user: { id: 1 } } as any, 'test-key');
+      const res = await controller.sendRequest(
+        { user: { id: 1 } } as any,
+        'test-key',
+      );
 
-      expect(mockOrganizationsService.sendRequest).toHaveBeenCalledWith({ id: 1 }, 'test-key');
+      expect(mockOrganizationsService.sendRequest).toHaveBeenCalledWith(
+        { id: 1 },
+        'test-key',
+      );
       expect(res).toEqual(result);
     });
   });
@@ -115,9 +130,17 @@ describe('OrganizationsController', () => {
       const result = { id: 1, status: 'APPROVED' };
       mockOrganizationsService.handleJoinRequest.mockResolvedValue(result);
 
-      const res = await controller.handleRequest('1' as any, '1' as any, 'approve');
+      const res = await controller.handleRequest(
+        '1' as any,
+        '1' as any,
+        'approve',
+      );
 
-      expect(mockOrganizationsService.handleJoinRequest).toHaveBeenCalledWith('1', '1', true);
+      expect(mockOrganizationsService.handleJoinRequest).toHaveBeenCalledWith(
+        '1',
+        '1',
+        true,
+      );
       expect(res).toEqual(result);
     });
 
@@ -125,9 +148,17 @@ describe('OrganizationsController', () => {
       const result = { id: 1, status: 'REJECTED' };
       mockOrganizationsService.handleJoinRequest.mockResolvedValue(result);
 
-      const res = await controller.handleRequest('1' as any, '1' as any, 'reject');
+      const res = await controller.handleRequest(
+        '1' as any,
+        '1' as any,
+        'reject',
+      );
 
-      expect(mockOrganizationsService.handleJoinRequest).toHaveBeenCalledWith('1', '1', false);
+      expect(mockOrganizationsService.handleJoinRequest).toHaveBeenCalledWith(
+        '1',
+        '1',
+        false,
+      );
       expect(res).toEqual(result);
     });
   });
@@ -137,9 +168,14 @@ describe('OrganizationsController', () => {
       const result = { members: [], requests: [] };
       mockOrganizationsService.getMembersAndRequests.mockResolvedValue(result);
 
-      const res = await controller.getOrganizationMembers('1' as any, { isCreatorAdmin: true } as any);
+      const res = await controller.getOrganizationMembers(
+        '1' as any,
+        { isCreatorAdmin: true } as any,
+      );
 
-      expect(mockOrganizationsService.getMembersAndRequests).toHaveBeenCalledWith('1');
+      expect(
+        mockOrganizationsService.getMembersAndRequests,
+      ).toHaveBeenCalledWith('1');
       expect(res).toEqual(result);
     });
 
@@ -147,7 +183,10 @@ describe('OrganizationsController', () => {
       const result = [{ id: 1, email: 'test@example.com' }];
       mockOrganizationsService.getMembers.mockResolvedValue(result);
 
-      const res = await controller.getOrganizationMembers('1' as any, { isCreatorAdmin: false } as any);
+      const res = await controller.getOrganizationMembers(
+        '1' as any,
+        { isCreatorAdmin: false } as any,
+      );
 
       expect(mockOrganizationsService.getMembers).toHaveBeenCalledWith('1');
       expect(res).toEqual(result);

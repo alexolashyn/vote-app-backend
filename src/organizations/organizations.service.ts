@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, NotFoundException, ForbiddenException, UseGuards } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Organization } from '../entities/organization.entity';
@@ -6,7 +10,6 @@ import { User, UserRole } from '../entities/user.entity';
 import { Request, RequestStatus } from '../entities/request.entity';
 import { JwtService } from '@nestjs/jwt';
 import { In } from 'typeorm';
-
 
 @Injectable()
 export class OrganizationsService {
@@ -18,11 +21,16 @@ export class OrganizationsService {
     @InjectRepository(Request)
     private readonly requestRepository: Repository<Request>,
     private readonly jwtService: JwtService,
-  ) {
-  }
+  ) {}
 
-  async createOrganization(name: string, memberEmails: string[], creatorId: number) {
-    const creator = await this.userRepository.findOne({ where: { id: creatorId } });
+  async createOrganization(
+    name: string,
+    memberEmails: string[],
+    creatorId: number,
+  ) {
+    const creator = await this.userRepository.findOne({
+      where: { id: creatorId },
+    });
     if (!creator) {
       throw new NotFoundException('User is not found!');
     }
@@ -37,9 +45,13 @@ export class OrganizationsService {
     });
 
     const usedEmails = new Set(members.map((user) => user.email));
-    const notFoundEmails = memberEmails.filter((email) => !usedEmails.has(email));
+    const notFoundEmails = memberEmails.filter(
+      (email) => !usedEmails.has(email),
+    );
     if (notFoundEmails.length > 0) {
-      throw new BadRequestException(`Following users are not found: ${notFoundEmails.join(', ')}`);
+      throw new BadRequestException(
+        `Following users are not found: ${notFoundEmails.join(', ')}`,
+      );
     }
 
     const organization = this.organizationRepository.create({
@@ -48,7 +60,8 @@ export class OrganizationsService {
       creatorId,
     });
 
-    const newOrganization = await this.organizationRepository.save(organization);
+    const newOrganization =
+      await this.organizationRepository.save(organization);
     return {
       id: newOrganization.id,
       name: newOrganization.name,

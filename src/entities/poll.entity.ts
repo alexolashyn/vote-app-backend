@@ -4,10 +4,10 @@ import {
   Column,
   CreateDateColumn,
   OneToMany,
-  ManyToOne
+  ManyToOne,
 } from 'typeorm';
 import { Vote } from './vote.entity';
-import {Organization} from './organization.entity';
+import { Organization } from './organization.entity';
 
 @Entity('polls')
 export class Poll {
@@ -35,6 +35,8 @@ export class Poll {
   @OneToMany(() => Vote, (vote) => vote.poll)
   votes: Vote[];
 
-  @ManyToOne(() => Organization, (organization) => organization.polls, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Organization, (organization) => organization.polls, {
+    onDelete: 'CASCADE',
+  })
   organization: Organization;
 }
