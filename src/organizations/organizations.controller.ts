@@ -17,13 +17,16 @@ import { MembershipGuard } from '../guards/membership.guard';
 @Controller('organizations')
 @UseGuards(JwtAuthGuard)
 export class OrganizationsController {
-  constructor(private organizationsService: OrganizationsService) {
-  }
+  constructor(private organizationsService: OrganizationsService) {}
 
   @Post()
   createOrganization(@Body() body: CreateOrgDto, @Request() req) {
     const { email, id } = req.user;
-    return this.organizationsService.createOrganization(body.name, [...body.members, email], id);
+    return this.organizationsService.createOrganization(
+      body.name,
+      [...body.members, email],
+      id,
+    );
   }
 
   @Get()
@@ -63,9 +66,12 @@ export class OrganizationsController {
     @Param('action') action: string,
   ) {
     const isApprove = action === 'approve';
-    return this.organizationsService.handleJoinRequest(orgId, requestId, isApprove);
+    return this.organizationsService.handleJoinRequest(
+      orgId,
+      requestId,
+      isApprove,
+    );
   }
-
 
   @Get(':orgId/members')
   @UseGuards(MembershipGuard)

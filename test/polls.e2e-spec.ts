@@ -21,7 +21,11 @@ describe('Polls system (e2e)', () => {
   };
 
   // Helper function to create an organization
-  const createOrganization = async (token: string, name: string, members: string[]) => {
+  const createOrganization = async (
+    token: string,
+    name: string,
+    members: string[],
+  ) => {
     const createOrgDto: CreateOrgDto = { name, members };
     const response = await request(app.getHttpServer())
       .post('/organizations')
@@ -32,7 +36,13 @@ describe('Polls system (e2e)', () => {
   };
 
   // Helper function to create a poll
-  const createPoll = async (token: string, orgId: number, title: string, options: string[], description?: string) => {
+  const createPoll = async (
+    token: string,
+    orgId: number,
+    title: string,
+    options: string[],
+    description?: string,
+  ) => {
     const createPollDto: CreatePollDto = { title, options, description };
     const response = await request(app.getHttpServer())
       .post(`/polls/${orgId}`)
@@ -54,10 +64,16 @@ describe('Polls system (e2e)', () => {
     authToken = await registerUser('poll.user@example.com', 'Password123');
 
     // Register an admin user and get token
-    adminAuthToken = await registerUser('poll.admin@example.com', 'AdminPassword123');
+    adminAuthToken = await registerUser(
+      'poll.admin@example.com',
+      'AdminPassword123',
+    );
 
     // Create an organization where both users are members, and admin is the creator
-    orgId = await createOrganization(adminAuthToken, 'Poll Test Org', ['poll.user@example.com', 'poll.admin@example.com']);
+    orgId = await createOrganization(adminAuthToken, 'Poll Test Org', [
+      'poll.user@example.com',
+      'poll.admin@example.com',
+    ]);
   });
 
   afterEach(async () => {
@@ -86,12 +102,10 @@ describe('Polls system (e2e)', () => {
 
   it('gets a poll by ID', async () => {
     // Create a poll for testing
-    const pollId = await createPoll(
-      authToken,
-      orgId,
-      'Test Poll for ID',
-      ['Option A', 'Option B'],
-    );
+    const pollId = await createPoll(authToken, orgId, 'Test Poll for ID', [
+      'Option A',
+      'Option B',
+    ]);
 
     return request(app.getHttpServer())
       .get(`/polls/${pollId}`)
@@ -106,49 +120,41 @@ describe('Polls system (e2e)', () => {
 
   it('handles vote request', async () => {
     // Create a poll
-    const pollId = await createPoll(
-      authToken,
-      orgId,
-      'Vote Test Poll',
-      ['Vote Option 1', 'Vote Option 2'],
-    );
+    const pollId = await createPoll(authToken, orgId, 'Vote Test Poll', [
+      'Vote Option 1',
+      'Vote Option 2',
+    ]);
 
     return request(app.getHttpServer())
       .post(`/polls/${pollId}/vote`)
       .set('Authorization', `Bearer ${authToken}`)
       .send({ option: 'Vote Option 1' })
-      .expect(201)
+      .expect(201);
   });
 
   it('handles close poll request (requires admin)', async () => {
     // Create a poll as admin
-    const pollId = await createPoll(
-      adminAuthToken,
-      orgId,
-      'Poll to Close',
-      ['Opt 1', 'Opt 2'],
-    );
+    const pollId = await createPoll(adminAuthToken, orgId, 'Poll to Close', [
+      'Opt 1',
+      'Opt 2',
+    ]);
 
     return request(app.getHttpServer())
       .post(`/polls/${pollId}/close`)
       .set('Authorization', `Bearer ${adminAuthToken}`) // Use admin token
-      .expect(201)
+      .expect(201);
   });
 
   it('fails to close poll if not admin', async () => {
     // Create a poll as a regular user
-    const pollId = await createPoll(
-      authToken,
-      orgId,
-      'Poll to fail close',
-      ['Opt A', 'Opt B'],
-    );
+    const pollId = await createPoll(authToken, orgId, 'Poll to fail close', [
+      'Opt A',
+      'Opt B',
+    ]);
 
     return request(app.getHttpServer())
       .post(`/polls/${pollId}/close`)
       .set('Authorization', `Bearer ${authToken}`) // Use regular user token
       .expect(403); // Expect Forbidden (missing admin rights)
   });
-
-
 });

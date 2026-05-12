@@ -43,13 +43,27 @@ describe('PollsController', () => {
 
   describe('createPoll', () => {
     it('should call service.createPoll and return result', async () => {
-      const dto = { title: 'Test Poll', options: ['A', 'B'], description: 'Test' };
+      const dto = {
+        title: 'Test Poll',
+        options: ['A', 'B'],
+        description: 'Test',
+      };
       const result = { id: 1, title: 'Test Poll' };
       mockPollsService.createPoll.mockResolvedValue(result);
 
-      const res = await controller.createPoll(dto, { user: { id: 1 } } as any, 1);
+      const res = await controller.createPoll(
+        dto,
+        { user: { id: 1 } } as any,
+        1,
+      );
 
-      expect(mockPollsService.createPoll).toHaveBeenCalledWith(dto.title, dto.options, dto.description, 1, 1);
+      expect(mockPollsService.createPoll).toHaveBeenCalledWith(
+        dto.title,
+        dto.options,
+        dto.description,
+        1,
+        1,
+      );
       expect(res).toEqual(result);
     });
   });

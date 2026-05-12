@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Poll } from '../entities/poll.entity';
@@ -14,10 +18,15 @@ export class PollsService {
     private voteRepository: Repository<Vote>,
     @InjectRepository(Organization)
     private organizationRepository: Repository<Organization>,
-  ) {
-  }
+  ) {}
 
-  async createPoll(title: string, options: string[], description: string = null, userId: number, orgId: number) {
+  async createPoll(
+    title: string,
+    options: string[],
+    description: string = null,
+    userId: number,
+    orgId: number,
+  ) {
     const organization = await this.organizationRepository.findOne({
       where: { id: orgId },
     });
@@ -86,14 +95,20 @@ export class PollsService {
     const { votes, options } = poll;
     const totalVotes = votes.length;
 
-    const voteCounts = votes.reduce((acc, vote) => {
-      acc[vote.option] = (acc[vote.option] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const voteCounts = votes.reduce(
+      (acc, vote) => {
+        acc[vote.option] = (acc[vote.option] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
-    const result = options.map(option => {
+    const result = options.map((option) => {
       const count = voteCounts[option] || 0;
-      const percentage = totalVotes === 0 ? '0.00%' : ((count / totalVotes) * 100).toFixed(2) + '%';
+      const percentage =
+        totalVotes === 0
+          ? '0.00%'
+          : ((count / totalVotes) * 100).toFixed(2) + '%';
       return {
         option,
         votes: count,

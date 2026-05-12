@@ -40,7 +40,10 @@ describe('AuthController', () => {
 
       const res = await controller.register(dto);
 
-      expect(mockAuthService.register).toHaveBeenCalledWith(dto.email, dto.password);
+      expect(mockAuthService.register).toHaveBeenCalledWith(
+        dto.email,
+        dto.password,
+      );
       expect(res).toEqual(result);
     });
   });
@@ -53,7 +56,10 @@ describe('AuthController', () => {
 
       const res = await controller.login(dto);
 
-      expect(mockAuthService.login).toHaveBeenCalledWith(dto.email, dto.password);
+      expect(mockAuthService.login).toHaveBeenCalledWith(
+        dto.email,
+        dto.password,
+      );
       expect(res).toEqual(result);
     });
   });
@@ -72,16 +78,24 @@ describe('AuthController', () => {
   describe('register - validation', () => {
     it('should handle empty email', async () => {
       const dto = { email: '', password: '123456' };
-      mockAuthService.register.mockRejectedValue(new Error('Email is required'));
+      mockAuthService.register.mockRejectedValue(
+        new Error('Email is required'),
+      );
 
-      await expect(controller.register(dto)).rejects.toThrow('Email is required');
+      await expect(controller.register(dto)).rejects.toThrow(
+        'Email is required',
+      );
     });
 
     it('should handle empty password', async () => {
       const dto = { email: 'test@example.com', password: '' };
-      mockAuthService.register.mockRejectedValue(new Error('Password is required'));
+      mockAuthService.register.mockRejectedValue(
+        new Error('Password is required'),
+      );
 
-      await expect(controller.register(dto)).rejects.toThrow('Password is required');
+      await expect(controller.register(dto)).rejects.toThrow(
+        'Password is required',
+      );
     });
   });
 });

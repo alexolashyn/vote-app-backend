@@ -28,5 +28,4 @@ import { AdminGuard } from '../guards/admin.guard';
   providers: [OrganizationsService, AdminGuard],
   controllers: [OrganizationsController],
 })
-export class OrganizationsModule {
-}
+export class OrganizationsModule {}

@@ -41,7 +41,5 @@ import * as process from 'node:process';
       useClass: JwtExceptionFilter,
     },
   ],
-
 })
-export class AppModule {
-}
+export class AppModule {}

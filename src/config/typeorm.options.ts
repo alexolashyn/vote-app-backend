@@ -9,26 +9,29 @@ const type = process.env.DATABASE_TYPE;
 export const typeOrmOptions: DataSourceOptions =
   type === 'sqlite'
     ? {
-      type: 'sqlite',
-      database: process.env.DATABASE_NAME,
-      entities: ['dist/**/*.entity.js'],
-      migrations: ['dist/migrations/*.js'],
-      synchronize: true,
-    }
+        type: 'sqlite',
+        database: process.env.DATABASE_NAME,
+        entities: ['dist/**/*.entity.js'],
+        migrations: ['dist/migrations/*.js'],
+        synchronize: true,
+      }
     : {
-      // type: 'postgres',
-      // host: process.env.DATABASE_HOST,
-      // port: Number(process.env.DATABASE_PORT),
-      // username: process.env.DATABASE_USERNAME,
-      // password: process.env.DATABASE_PASSWORD,
-      // database: process.env.DATABASE_NAME,
-      // entities: ['dist/**/*.entity.js'],
-      // migrations: ['dist/migrations/*.js'],
-      // synchronize: false,
-      type: 'postgres',
-      url: process.env.DATABASE_URL,
-      entities: ['dist/**/*.entity.js'],
-      migrations: ['dist/migrations/*.js'],
-      synchronize: false,
-      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-    };
+        // type: 'postgres',
+        // host: process.env.DATABASE_HOST,
+        // port: Number(process.env.DATABASE_PORT),
+        // username: process.env.DATABASE_USERNAME,
+        // password: process.env.DATABASE_PASSWORD,
+        // database: process.env.DATABASE_NAME,
+        // entities: ['dist/**/*.entity.js'],
+        // migrations: ['dist/migrations/*.js'],
+        // synchronize: false,
+        type: 'postgres',
+        url: process.env.DATABASE_URL,
+        entities: ['dist/**/*.entity.js'],
+        migrations: ['dist/migrations/*.js'],
+        synchronize: false,
+        ssl:
+          process.env.NODE_ENV === 'production'
+            ? { rejectUnauthorized: false }
+            : false,
+      };

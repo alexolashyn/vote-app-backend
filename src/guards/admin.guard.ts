@@ -1,4 +1,10 @@
-import { CanActivate, ExecutionContext, Injectable, ForbiddenException, NotFoundException } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PollsService } from '../polls/polls.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -11,8 +17,7 @@ export class AdminGuard implements CanActivate {
     private readonly pollsService: PollsService,
     @InjectRepository(Organization)
     private readonly organizationRepository: Repository<Organization>,
-  ) {
-  }
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -27,9 +32,12 @@ export class AdminGuard implements CanActivate {
       ? this.getOrgByPollId(pollId)
       : this.getOrgById(orgId));
 
-    const isCreatorAdmin = role === UserRole.ADMIN && organization.creatorId === userId;
+    const isCreatorAdmin =
+      role === UserRole.ADMIN && organization.creatorId === userId;
     if (!isCreatorAdmin) {
-      throw new ForbiddenException('You are not authorized to access this resource!');
+      throw new ForbiddenException(
+        'You are not authorized to access this resource!',
+      );
     }
 
     return true;

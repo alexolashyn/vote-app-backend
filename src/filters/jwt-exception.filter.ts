@@ -24,6 +24,5 @@ export class JwtExceptionFilter implements ExceptionFilter {
         return;
       }
     }
-
   }
 }

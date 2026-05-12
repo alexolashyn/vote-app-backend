@@ -4,8 +4,7 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 @Injectable()
 export class TypeOrmConfigService {
-  constructor(private configService: ConfigService) {
-  }
+  constructor(private configService: ConfigService) {}
 
   createTypeOrmOptions(): TypeOrmModuleOptions {
     const type = this.configService.get<'postgres' | 'sqlite'>('DATABASE_TYPE');
@@ -35,7 +34,10 @@ export class TypeOrmConfigService {
       entities: [__dirname + '/../**/*.entity{.ts,.js}'],
       migrations: [__dirname + '/../migrations/*{.ts,.js}'],
       synchronize: false,
-      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false, 
+      ssl:
+        process.env.NODE_ENV === 'production'
+          ? { rejectUnauthorized: false }
+          : false,
     };
   }
 }

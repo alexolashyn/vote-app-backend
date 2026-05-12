@@ -12,5 +12,4 @@ import { Organization } from '../entities/organization.entity';
   providers: [PollsService],
   exports: [PollsService],
 })
-export class PollsModule {
-}
+export class PollsModule {}

@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
@@ -11,8 +15,7 @@ export class AuthService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private jwtService: JwtService,
-  ) {
-  }
+  ) {}
 
   private async generateToken(user: any): Promise<{ token: string }> {
     const payload = { sub: user.id, email: user.email, role: user.role };
@@ -27,7 +30,10 @@ export class AuthService {
       throw new BadRequestException('Provided email is already in use!');
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = this.userRepository.create({ email, password: hashedPassword });
+    const user = this.userRepository.create({
+      email,
+      password: hashedPassword,
+    });
     await this.userRepository.save(user);
     return this.generateToken(user);
   }
@@ -46,10 +52,9 @@ export class AuthService {
 
   async validateUser(userId: number) {
     return this.userRepository.findOne({
-      where:
-        {
-          id: userId,
-        },
+      where: {
+        id: userId,
+      },
     });
   }
 }
